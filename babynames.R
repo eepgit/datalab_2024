@@ -53,6 +53,20 @@ the_nineties <- bb_names %>% filter( year >= 1990, year <= 1999)
 #16) Save this dataset to your repository (use write_csv()).
 write_csv(the_nineties, file ="babynames_nineties.csv")
 
- 
+#17) Add, commit, and push your files to GitHub. Check GitHub and make sure that your code successfully pushed.
+# save your project/script in your project
+# in Environment pane, click on Git tab
+#
+#
+#
 
+#19) Now that everything is up to date, make a visualisation of you and your team member’s names for a year of your choice.
 
+bb_team2017 <-  bb_names %>% filter(name %in% c("Emily", "Linnea", "Adri", "Nicole"), year=="2017" ) 
+
+ggplot(data=bb_team2017)+
+  +   geom_col(aes(x=name, y=prop)) 
+
+#20) Make a visual that looks at your name over time. What happens if you color by sex?
+ggplot(bb_names %>% filter(name == "Emily")) +
+  geom_line(aes(x=year, y=n, color=sex))
