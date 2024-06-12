@@ -1,0 +1,87 @@
+---
+title: "Sewanee Climate report"
+author: "EEP"
+date: "6/12/2024"
+output: html_document
+---
+# Average precipitation for each month from 2000 to 2024, in 5 year periods
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(lubridate) # to handle date data
+weather <- read_csv('sewanee_weather.csv')
+
+weather1 <- weather %>% 
+  mutate(month = month(ymd(DATE)), year = year(ymd(DATE)))
+           
+weather1 <- weather1 %>% 
+  mutate(yrblock = case_when(
+      year >= 2000 & year <= 2004  ~ "2000-2004",
+      year >= 2005 & year <= 2009  ~ "2005-2009",
+      year >= 2010 & year <= 2014  ~ "2010-2014",
+      year >= 2015 & year <= 2019  ~ "2015-2019",
+      year >= 2020 & year <= 2024  ~ "2020-2024",
+      .default = "other"
+    ))
+
+precip <- weather1 %>% 
+  group_by(yrblock,month) %>% 
+  summarize(meanprecip = mean(PRCP,na.rm=TRUE))
+
+precip <- precip %>% 
+  mutate(month_name =month.abb[month]) %>% 
+  mutate(month_name=fct_reorder(month_name,month))
+
+```
+
+```{r}
+ggplot(precip, aes(x=month_name, y=meanprecip))+
+  geom_col(fill="lightblue") +
+  facet_wrap(~yrblock,nrow=5) +
+  labs(x=" Months", y= "Average Precipitation")
+```
+
+# Average Max Temp for each month from 2000 to 2024, in 5 year periods
+
+```{r, message=FALSE}
+
+
+tmax <- weather1 %>% 
+  group_by(yrblock,month) %>% 
+  summarize(meantmax = mean(TMAX,na.rm=TRUE))
+
+tmax <- tmax %>% 
+  mutate(month_name =month.abb[month]) %>% 
+  mutate(month_name=fct_reorder(month_name,month))
+
+```
+
+```{r}
+ggplot(tmax, aes(x=month_name, y=meantmax))+
+  geom_col(fill="firebrick2") +
+  facet_wrap(~yrblock,nrow=5) +
+  labs(x=" Months", y= "Average Maximum Temperature")
+```
+
+# Average Min Temp for each month from 2000 to 2024, in 5 year periods
+
+```{r, message=FALSE}
+
+tmin <- weather1 %>% 
+  group_by(yrblock,month) %>% 
+  summarize(meantmin = mean(TMIN,na.rm=TRUE))
+
+tmin <- tmin %>% 
+  mutate(month_name =month.abb[month]) %>% 
+  mutate(month_name=fct_reorder(month_name,month)) 
+# factor reorder: fct_reorder reorders according to another variable
+
+```
+
+```{r}
+ggplot(tmin, aes(x=month_name, y=meantmin))+
+  geom_col(fill="orange2") +
+  facet_wrap(~yrblock,nrow=5) +
+  labs(x=" Months", y= "Average Minimum Temperature")
+```
